@@ -96,5 +96,12 @@ public class DogGoDbContext : DbContext
             new Walker {Id=28, Name="Redford", ImageUrl="https://avatars.dicebear.com/v2/female/c117aa483c649ecbc46c6d65172bf6e6.svg", NeighborhoodId=14}
         });
 
+        modelBuilder.Entity<Walk>().HasData(new Walk[]
+        {
+            new Walk {Id = 1, WalkerId = 1, DogId = 1, Duration = 2, Date = new DateOnly(2024, 06, 13)},
+            new Walk {Id = 2, WalkerId = 1, DogId = 3, Duration = 2, Date = new DateOnly(2024, 06, 13)},
+            new Walk {Id = 3, WalkerId = 2, DogId = 5, Duration = 1, Date = new DateOnly(2024, 06, 15)}
+        });
+
 }
 }
