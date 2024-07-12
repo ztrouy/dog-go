@@ -59,6 +59,7 @@ namespace DogGo.Controllers
         // GET: Owners/Create
         public IActionResult Create()
         {
+            ViewData["NeighborhoodId"] = new SelectList(_context.Neighborhoods, "Id", "Id");
             return View();
         }
 
@@ -91,6 +92,8 @@ namespace DogGo.Controllers
             {
                 return NotFound();
             }
+
+            ViewData["NeighborhoodId"] = new SelectList(_context.Neighborhoods, "Id", "Id", owner.NeighborhoodId);
             return View(owner);
         }
 
