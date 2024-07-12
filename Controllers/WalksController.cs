@@ -85,8 +85,8 @@ namespace DogGo.Controllers
             {
                 return NotFound();
             }
-            ViewData["DogId"] = new SelectList(_context.Dogs, "Id", "Id", walk.DogId);
-            ViewData["WalkerId"] = new SelectList(_context.Walkers, "Id", "Id", walk.WalkerId);
+            ViewData["DogId"] = new SelectList(_context.Dogs, "Id", "Name", walk.DogId);
+            ViewData["WalkerId"] = new SelectList(_context.Walkers, "Id", "Name", walk.WalkerId);
             return View(walk);
         }
 
@@ -122,8 +122,8 @@ namespace DogGo.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DogId"] = new SelectList(_context.Dogs, "Id", "Id", walk.DogId);
-            ViewData["WalkerId"] = new SelectList(_context.Walkers, "Id", "Id", walk.WalkerId);
+            ViewData["DogId"] = new SelectList(_context.Dogs, "Id", "Name", walk.DogId);
+            ViewData["WalkerId"] = new SelectList(_context.Walkers, "Id", "Name", walk.WalkerId);
             return View(walk);
         }
 
