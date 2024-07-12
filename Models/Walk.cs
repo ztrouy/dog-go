@@ -8,5 +8,6 @@ namespace DogGo.Models
         public int WalkerId {get; set; }
         public Walker Walker { get; set;}
         public int Duration { get; set; }
+        public DateOnly Date { get; set; }
     }
 }
