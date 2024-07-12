@@ -49,8 +49,8 @@ namespace DogGo.Controllers
         // GET: Walks/Create
         public IActionResult Create()
         {
-            ViewData["DogId"] = new SelectList(_context.Dogs, "Id", "Id");
-            ViewData["WalkerId"] = new SelectList(_context.Walkers, "Id", "Id");
+            ViewData["DogId"] = new SelectList(_context.Dogs, "Id", "Name");
+            ViewData["WalkerId"] = new SelectList(_context.Walkers, "Id", "Name");
             return View();
         }
 
@@ -67,8 +67,8 @@ namespace DogGo.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DogId"] = new SelectList(_context.Dogs, "Id", "Id", walk.DogId);
-            ViewData["WalkerId"] = new SelectList(_context.Walkers, "Id", "Id", walk.WalkerId);
+            ViewData["DogId"] = new SelectList(_context.Dogs, "Id", "Name", walk.DogId);
+            ViewData["WalkerId"] = new SelectList(_context.Walkers, "Id", "Name", walk.WalkerId);
             return View(walk);
         }
 
