@@ -7,79 +7,72 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DogGo.Data;
 using DogGo.Models;
-using DogGo.Models.ViewModels;
 
 namespace DogGo.Controllers
 {
-    public class OwnersController : Controller
+    public class WalksController : Controller
     {
         private readonly DogGoDbContext _context;
 
-        public OwnersController(DogGoDbContext context)
+        public WalksController(DogGoDbContext context)
         {
             _context = context;
         }
 
-        // GET: Owners
-        public ActionResult Index()
+        // GET: Walks
+        public async Task<IActionResult> Index()
         {
-            List<Owner> owners = _context.Owners.ToList();
-            
-            return View(owners);
+            var dogGoDbContext = _context.Walks.Include(w => w.Dog).Include(w => w.Walker);
+            return View(await dogGoDbContext.ToListAsync());
         }
 
-        // GET: Owners/Details/5
-        public ActionResult Details(int? id)
+        // GET: Walks/Details/5
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            Owner owner = _context.Owners.FirstOrDefault(m => m.Id == id);
-            
-            if (owner == null)
+            var walk = await _context.Walks
+                .Include(w => w.Dog)
+                .Include(w => w.Walker)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (walk == null)
             {
                 return NotFound();
             }
 
-            List<Dog> dogs = _context.Dogs.Where(d => d.OwnerId == owner.Id).ToList();
-            List<Walker> walkers = _context.Walkers.Where(w => w.NeighborhoodId == owner.NeighborhoodId).ToList();
-
-            ProfileViewModel vm = new ProfileViewModel()
-            {
-                Owner = owner,
-                Dogs = dogs,
-                Walkers = walkers
-            };
-
-            return View(vm);
+            return View(walk);
         }
 
-        // GET: Owners/Create
+        // GET: Walks/Create
         public IActionResult Create()
         {
-            ViewData["NeighborhoodId"] = new SelectList(_context.Neighborhoods, "Id", "Id");
+            ViewData["DogId"] = new SelectList(_context.Dogs, "Id", "Name");
+            ViewData["WalkerId"] = new SelectList(_context.Walkers, "Id", "Name");
             return View();
         }
 
-        // POST: Owners/Create
+        // POST: Walks/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Email,Name,Address,NeighborhoodId,Phone")] Owner owner)
+        public async Task<IActionResult> Create([Bind("Id,DogId,WalkerId,Duration,Date")] Walk walk)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(owner);
+                _context.Add(walk);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(owner);
+            ViewData["DogId"] = new SelectList(_context.Dogs, "Id", "Name", walk.DogId);
+            ViewData["WalkerId"] = new SelectList(_context.Walkers, "Id", "Name", walk.WalkerId);
+            return View(walk);
         }
 
-        // GET: Owners/Edit/5
+        // GET: Walks/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -87,24 +80,24 @@ namespace DogGo.Controllers
                 return NotFound();
             }
 
-            var owner = await _context.Owners.FindAsync(id);
-            if (owner == null)
+            var walk = await _context.Walks.FindAsync(id);
+            if (walk == null)
             {
                 return NotFound();
             }
-
-            ViewData["NeighborhoodId"] = new SelectList(_context.Neighborhoods, "Id", "Id", owner.NeighborhoodId);
-            return View(owner);
+            ViewData["DogId"] = new SelectList(_context.Dogs, "Id", "Name", walk.DogId);
+            ViewData["WalkerId"] = new SelectList(_context.Walkers, "Id", "Name", walk.WalkerId);
+            return View(walk);
         }
 
-        // POST: Owners/Edit/5
+        // POST: Walks/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Email,Name,Address,NeighborhoodId,Phone")] Owner owner)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,DogId,WalkerId,Duration,Date")] Walk walk)
         {
-            if (id != owner.Id)
+            if (id != walk.Id)
             {
                 return NotFound();
             }
@@ -113,12 +106,12 @@ namespace DogGo.Controllers
             {
                 try
                 {
-                    _context.Update(owner);
+                    _context.Update(walk);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!OwnerExists(owner.Id))
+                    if (!WalkExists(walk.Id))
                     {
                         return NotFound();
                     }
@@ -129,10 +122,12 @@ namespace DogGo.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(owner);
+            ViewData["DogId"] = new SelectList(_context.Dogs, "Id", "Name", walk.DogId);
+            ViewData["WalkerId"] = new SelectList(_context.Walkers, "Id", "Name", walk.WalkerId);
+            return View(walk);
         }
 
-        // GET: Owners/Delete/5
+        // GET: Walks/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -140,34 +135,36 @@ namespace DogGo.Controllers
                 return NotFound();
             }
 
-            var owner = await _context.Owners
+            var walk = await _context.Walks
+                .Include(w => w.Dog)
+                .Include(w => w.Walker)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (owner == null)
+            if (walk == null)
             {
                 return NotFound();
             }
 
-            return View(owner);
+            return View(walk);
         }
 
-        // POST: Owners/Delete/5
+        // POST: Walks/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var owner = await _context.Owners.FindAsync(id);
-            if (owner != null)
+            var walk = await _context.Walks.FindAsync(id);
+            if (walk != null)
             {
-                _context.Owners.Remove(owner);
+                _context.Walks.Remove(walk);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool OwnerExists(int id)
+        private bool WalkExists(int id)
         {
-            return _context.Owners.Any(e => e.Id == id);
+            return _context.Walks.Any(e => e.Id == id);
         }
     }
 }
