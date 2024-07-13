@@ -98,9 +98,9 @@ public class DogGoDbContext : DbContext
 
         modelBuilder.Entity<Walk>().HasData(new Walk[]
         {
-            new Walk {Id = 1, WalkerId = 1, DogId = 1, Duration = 2, Date = new DateOnly(2024, 06, 13)},
-            new Walk {Id = 2, WalkerId = 1, DogId = 3, Duration = 2, Date = new DateOnly(2024, 06, 13)},
-            new Walk {Id = 3, WalkerId = 2, DogId = 5, Duration = 1, Date = new DateOnly(2024, 06, 15)}
+            new Walk {Id = 1, WalkerId = 1, DogId = 1, Duration = 2, Date = new DateTime(2024, 06, 13)},
+            new Walk {Id = 2, WalkerId = 1, DogId = 3, Duration = 2, Date = new DateTime(2024, 06, 13)},
+            new Walk {Id = 3, WalkerId = 2, DogId = 5, Duration = 1, Date = new DateTime(2024, 06, 15)}
         });
 
 }
